@@ -1,42 +1,3 @@
-<!-- 
-python3
-
-from pathlib import Path
-import subprocess
-import imageio_ffmpeg
-
-ffmpeg = imageio_ffmpeg.get_ffmpeg_exe()
-
-folders = ["example_evals", "example_data_cleaning"]
-speed = 7
-
-for folder_name in folders:
-    input_dir = Path(folder_name)
-    output_dir = Path(f"{folder_name}_7x")
-    output_dir.mkdir(parents=True, exist_ok=True)
-    for video in sorted(input_dir.glob("*.mp4")):
-        output_file = output_dir / video.name
-        print(f"Processing: {video.name}")
-        command = [
-            ffmpeg,
-            "-y",
-            "-i", str(video),
-            "-vf", f"setpts=(PTS-STARTPTS)/{speed}",
-            "-vsync", "0",
-            "-an",
-            "-c:v", "libx264",
-            "-crf", "18",
-            "-preset", "fast",
-            "-movflags", "+faststart",
-            str(output_file)
-        ]
-        subprocess.run(command, check=True)
-        print(f"Saved: {output_file}")
-
-
-
-
-print("\nFinished processing all videos!") -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -84,6 +45,9 @@ print("\nFinished processing all videos!") -->
     }
     .description { font-size: 1.1em; margin-bottom: .3rem; }
     .section-heading { font-size: 24px; font-weight: bold; margin: 2rem 1rem 1rem; }
+    .section-heading:not(:first-child) {
+      margin-top: 12rem;
+    }
     video::-webkit-media-controls-panel {
       background-image: none !important;
       background-color: transparent !important;
