@@ -1,0 +1,225 @@
+<!-- 
+python3
+
+from pathlib import Path
+import subprocess
+import imageio_ffmpeg
+
+ffmpeg = imageio_ffmpeg.get_ffmpeg_exe()
+
+folders = ["example_evals", "example_data_cleaning"]
+speed = 7
+
+for folder_name in folders:
+    input_dir = Path(folder_name)
+    output_dir = Path(f"{folder_name}_7x")
+    output_dir.mkdir(parents=True, exist_ok=True)
+    for video in sorted(input_dir.glob("*.mp4")):
+        output_file = output_dir / video.name
+        print(f"Processing: {video.name}")
+        command = [
+            ffmpeg,
+            "-y",
+            "-i", str(video),
+            "-vf", f"setpts=(PTS-STARTPTS)/{speed}",
+            "-vsync", "0",
+            "-an",
+            "-c:v", "libx264",
+            "-crf", "18",
+            "-preset", "fast",
+            "-movflags", "+faststart",
+            str(output_file)
+        ]
+        subprocess.run(command, check=True)
+        print(f"Saved: {output_file}")
+
+
+
+
+print("\nFinished processing all videos!") -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Sublinear: Dream Machines examples" />
+  <meta name="keywords" content="Sublinear, Dream Machines, robotics, evaluation, actuator unboxing, training data cleaning" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Sublinear: Dream Machines exampless" />
+  <title>Sublinear | Dream Machines</title>
+
+  <!-- Retain the original page's fonts and stylesheets. -->
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet" />
+  <link rel="stylesheet" href="./static/css/bulma.min.css" />
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css" />
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css" />
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css" />
+  <link rel="stylesheet" href="./static/css/index.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: white;
+      max-width: 1500px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    h1 { text-align: center; }
+    .video-block {
+      background: white;
+      padding: 1rem;
+      margin-bottom: 2rem;
+      border-radius: 12px;
+    }
+    video {
+      display: block;
+      width: 100%;
+      margin-top: .5rem;
+      background: #000;
+    }
+    .description { font-size: 1.1em; margin-bottom: .3rem; }
+    .section-heading { font-size: 24px; font-weight: bold; margin: 2rem 1rem 1rem; }
+    video::-webkit-media-controls-panel {
+      background-image: none !important;
+      background-color: transparent !important;
+      filter: invert(1) hue-rotate(180deg);
+    }
+    video::-webkit-media-controls-enclosure,
+    video::-webkit-media-controls-overlay-enclosure {
+      background-image: none !important;
+      background-color: transparent !important;
+    }
+  </style>
+</head>
+<body>
+  <!-- <section>
+    <h1 style="font-size:30px;font-weight:bold;"></h1>
+    <h1>
+      <span class="link-block">
+        <a href="https://github.com/sole-r1/code" target="_blank" rel="noopener noreferrer" class="external-link button is-normal is-rounded is-dark">
+          <span class="icon"><i class="fab fa-github"></i></span>
+          <span>Code, Models, &amp; Data</span>
+        </a>
+      </span>
+    </h1>
+    <br /><br /><br />
+  </section> -->
+
+  <section>
+    <!-- <h2 style="font-size:20px;">Example videos for actuator unboxing evaluations and training data cleaning.</h2> -->
+    <br />
+    <div id="video-container"></div>
+  </section>
+
+  <script>
+    // Paths are relative to this index.html. Keep the example_evals/ and
+    // example_data_cleaning/ directories alongside the HTML file.
+    const videoSections = [
+      {
+        title: "Examples of each failure type",
+        videos: [
+          {
+            file: "example_evals/eval_actuator_unboxing_pi05_sweep_v2_01_freeze_01_full_episode_000020_dm_unbox_actuator_1004_test1s_checkpoint-1600_ds30_v2.mp4",
+            subtitle: "Failure type: failed pick"
+          },
+          {
+            file: "example_evals/eval_actuator_unboxing_pi05_sweep_v2_01_freeze_01_full_episode_000013_dm_unbox_actuator_1004_test1s_checkpoint-1600_ds30_v2.mp4",
+            subtitle: "Failure type: drop during handover"
+          },
+          {
+            file: "example_evals/eval_actuator_unboxing_pi05_sweep_v2_01_freeze_01_full_episode_000025_dm_unbox_actuator_1004_test1s_checkpoint-1300_ds10_v2.mp4",
+            subtitle: "Failure type: pick wrong actuator"
+          },
+          {
+            file: "example_evals/eval_actuator_unboxing_pi05_sweep_v2_01_freeze_01_full_episode_000103_dm_unbox_actuator_q35_27b_lora_1008_test1b_backup2_checkpoint-1900_ds30_v2.mp4",
+            subtitle: "Failure type: near-miss place"
+          },
+          {
+            file: "example_evals/actuator_unboxing_1h_HQ_episode_000178_dm_unbox_actuator_1004_test1s_checkpoint-1600_ds30_v2.mp4",
+            subtitle: "Full success (correlation between progress values and timestep: 0.99)"
+          }
+        ]
+      },
+      {
+        title: "Examples of finding sub-optimal timesteps to potentially filter out of training data\n(source dataset: actuator_unboxing_10h_vr)",
+        videos: [
+          {
+            file: "example_data_cleaning/episode_000221_dm_unbox_actuator_1004_test1s_checkpoint-500_ds30_v2.mp4",
+            subtitle: "Episode 000221 (correlation between progress values and timestep: 0.95)"
+          },
+          {
+            file: "example_data_cleaning/episode_000289_dm_unbox_actuator_1004_test1s_checkpoint-500_ds30_v2.mp4",
+            subtitle: "Episode 000289 (correlation between progress values and timestep: 0.95)"
+          },
+          {
+            file: "example_data_cleaning/episode_000324_dm_unbox_actuator_q35_27b_lora_1008_test1b_backup2_checkpoint-1900_ds30.mp4",
+            subtitle: "Episode 000324 (correlation between progress values and timestep: 0.70)"
+          },
+          {
+            file: "example_data_cleaning/episode_000337_dm_unbox_actuator_q35_27b_lora_1008_test1b_backup2_checkpoint-1900_ds30.mp4",
+            subtitle: "Episode 000337 (correlation between progress values and timestep: 0.63)"
+          },
+          {
+            file: "example_data_cleaning/episode_000868_dm_unbox_actuator_1004_test1s_checkpoint-500_ds30_v2.mp4",
+            subtitle: "Episode 000868 (correlation between progress values and timestep: 0.79)"
+          },
+          {
+            file: "example_data_cleaning/episode_000976_dm_unbox_actuator_1004_test1s_checkpoint-500_ds30_v2.mp4",
+            subtitle: "Episode 000976 (correlation between progress values and timestep: 0.95)"
+          }
+        ]
+      }
+    ];
+
+
+
+    const container = document.getElementById("video-container");
+    videoSections.forEach(section => {
+      const heading = document.createElement("h2");
+      heading.className = "section-heading";
+      heading.textContent = section.title;
+      container.appendChild(heading);
+
+      section.videos.forEach(item => {
+        const block = document.createElement("div");
+        block.className = "video-block";
+
+        const desc = document.createElement("p");
+        desc.className = "description";
+        desc.textContent = item.subtitle;
+
+        const video = document.createElement("video");
+        video.setAttribute("controls", "");
+        video.setAttribute("controlslist", "");
+        video.preload = "metadata";
+        video.disablePictureInPicture = true;
+        video.playsInline = true;
+        video.defaultPlaybackRate = 2.0;
+        video.playbackRate = 2.0;
+        video.addEventListener("loadedmetadata", () => {
+          // video.defaultPlaybackRate = 2.0;
+          // video.playbackRate = 2.0;
+          video.defaultPlaybackRate = 1.0;
+          video.playbackRate = 1.0;
+        }, { once: true });
+        video.setAttribute("aria-label", item.subtitle);
+
+        const source = document.createElement("source");
+        source.src = item.file;
+        source.type = "video/mp4";
+        video.appendChild(source);
+        video.appendChild(document.createTextNode("Your browser does not support HTML5 video."));
+
+        block.appendChild(desc);
+        block.appendChild(video);
+        container.appendChild(block);
+      });
+    });
+  </script>
+</body>
+</html>
